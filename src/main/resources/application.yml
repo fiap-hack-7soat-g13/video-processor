@@ -1,0 +1,24 @@
+server:
+  port: 9091
+spring:
+  application:
+    name: video-processor
+  rabbitmq:
+    addresses: amqp://localhost:5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        default-requeue-rejected: false
+application:
+  queue:
+    videoReceived:
+      name: video_received
+    videoStatusChanged:
+      name: video_status_changed
+  storage:
+    fileSystem:
+      active: true
+      directory: ${user.home}/video/storage
+  process:
+    directory: ${user.home}/video/process
