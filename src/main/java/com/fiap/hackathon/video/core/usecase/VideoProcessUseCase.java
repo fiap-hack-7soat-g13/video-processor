@@ -8,6 +8,7 @@ import com.fiap.hackathon.video.core.domain.VideoStatus;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -38,11 +39,14 @@ public class VideoProcessUseCase {
         try {
             videoStatusChangedDispatcher.dispatch(id, VideoStatus.PROCESSING);
             directory = Files.createTempDirectory(processDirectory, String.format("%s_", id)).toFile();
-            Path outputDirectory = Files.createDirectories(directory.toPath().resolve("thumbnails"));
+            Path outputDirectory = Files.createDirectories(directory.toPath().resolve("thumbnail"));
             Path original = directory.toPath().resolve(id.toString());
-            fileStorage.download(id, original);
-            Commands.generateThumbnails(original.toFile(), outputDirectory.resolve("thumbnail_%d.jpg").toFile()).execute();
-            Compression.zipDirectory(outputDirectory, directory.toPath().resolve("thumbnails.zip"));
+            Path thumbnail = directory.toPath().resolve("thumbnail.zip");
+            String storageName = id.toString();
+            fileStorage.download(fileStorage.getVideoLocation(), storageName, original);
+            Commands.generateThumbnails(original.toFile(), outputDirectory.resolve("%d.jpg").toFile()).execute();
+            Compression.zipDirectory(outputDirectory, thumbnail);
+            fileStorage.create(fileStorage.getThumbnailLocation(), storageName, new FileSystemResource(thumbnail));
             videoStatusChangedDispatcher.dispatch(id, VideoStatus.SUCCEEDED);
         } catch (Exception e) {
             videoStatusChangedDispatcher.dispatch(id, VideoStatus.FAILED);
