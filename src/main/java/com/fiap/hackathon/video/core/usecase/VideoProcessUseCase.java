@@ -8,7 +8,6 @@ import com.fiap.hackathon.video.core.domain.VideoStatus;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -46,7 +45,7 @@ public class VideoProcessUseCase {
             fileStorage.download(fileStorage.getVideoLocation(), storageName, original);
             Commands.generateThumbnails(original.toFile(), outputDirectory.resolve("%d.jpg").toFile()).execute();
             Compression.zipDirectory(outputDirectory, thumbnail);
-            fileStorage.create(fileStorage.getThumbnailLocation(), storageName, new FileSystemResource(thumbnail));
+            fileStorage.create(fileStorage.getThumbnailLocation(), storageName, thumbnail);
             videoStatusChangedDispatcher.dispatch(id, VideoStatus.SUCCEEDED);
         } catch (Exception e) {
             videoStatusChangedDispatcher.dispatch(id, VideoStatus.FAILED);

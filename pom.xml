@@ -16,6 +16,7 @@
 	<properties>
 		<java.version>23</java.version>
 		<commons-io.version>2.14.0</commons-io.version>
+		<software.amazon.awssdk.version>2.30.13</software.amazon.awssdk.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -34,6 +35,11 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>${commons-io.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>${software.amazon.awssdk.version}</version>
 		</dependency>
 
 		<dependency>

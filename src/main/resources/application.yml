@@ -16,10 +16,14 @@ application:
       name: video_received
     videoStatusChanged:
       name: video_status_changed
+  process:
+    directory: ${user.home}/video_storage/process
   storage:
+    amazonS3:
+      active: false
+      videoBucket: video-fc4f90cd
+      thumbnailBucket: thumbnail-cd3e1d98
     fileSystem:
       active: true
       videoDirectory: ${user.home}/video_storage/video
       thumbnailDirectory: ${user.home}/video_storage/thumbnail
-  process:
-    directory: ${user.home}/video_storage/process

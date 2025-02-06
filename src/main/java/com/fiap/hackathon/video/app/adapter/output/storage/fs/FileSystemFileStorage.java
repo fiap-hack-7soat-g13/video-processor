@@ -3,13 +3,11 @@ package com.fiap.hackathon.video.app.adapter.output.storage.fs;
 import com.fiap.hackathon.video.app.adapter.output.storage.FileStorage;
 import com.fiap.hackathon.video.app.adapter.output.storage.Location;
 import jakarta.annotation.PostConstruct;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -33,9 +31,10 @@ public class FileSystemFileStorage implements FileStorage {
     }
 
     @Override
-    public void create(Location location, String name, InputStreamSource source) {
-        try (InputStream is = source.getInputStream(); OutputStream os = new BufferedOutputStream(new FileOutputStream(getPath(location, name).toFile()))) {
-            IOUtils.copy(is, os);
+    public void create(Location location, String name, Path source) {
+        try {
+            Path target = getPath(location, name);
+            Files.copy(source, target);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
