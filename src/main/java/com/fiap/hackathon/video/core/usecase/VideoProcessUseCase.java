@@ -6,6 +6,7 @@ import com.fiap.hackathon.video.core.common.Commands;
 import com.fiap.hackathon.video.core.common.Compression;
 import com.fiap.hackathon.video.core.domain.VideoStatus;
 import jakarta.annotation.PostConstruct;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class VideoProcessUseCase {
         Files.createDirectories(processDirectory);
     }
 
+    @SneakyThrows
     public void execute(Long id) {
         File directory = null;
         try {
@@ -49,6 +51,7 @@ public class VideoProcessUseCase {
             videoStatusChangedDispatcher.dispatch(id, VideoStatus.SUCCEEDED);
         } catch (Exception e) {
             videoStatusChangedDispatcher.dispatch(id, VideoStatus.FAILED);
+            throw e;
         } finally {
             FileUtils.deleteQuietly(directory);
         }

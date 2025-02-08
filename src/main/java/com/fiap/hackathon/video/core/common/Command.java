@@ -4,20 +4,25 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
 @Slf4j
 public class Command {
 
+    private static final int SUCCESS_EXIT_CODE = 0;
+
     private final List<String> command;
 
     public Command(List<String> command) {
-        this.command = command;
+        this.command = List.copyOf(command);
     }
 
     @SneakyThrows
     public void execute() {
+
+        log.info("Executing command: {}", String.join(" ", command));
 
         Process process = new ProcessBuilder(command)
                 .redirectErrorStream(true)
@@ -35,7 +40,11 @@ public class Command {
             }
         }
 
-        process.waitFor();
+        int exitCode = process.waitFor();
+
+        if (exitCode != SUCCESS_EXIT_CODE) {
+            throw new IOException("Command execution failed");
+        }
     }
 
 }
