@@ -17,6 +17,10 @@
 		<java.version>23</java.version>
 		<commons-io.version>2.14.0</commons-io.version>
 		<software.amazon.awssdk.version>2.30.13</software.amazon.awssdk.version>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.organization>fiap-hack-7soat-g13</sonar.organization>
+		<sonar.projectKey>fiap-hack-7soat-g13_video-processor</sonar.projectKey>
+		<sonar.qualitygate.wait>true</sonar.qualitygate.wait>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -84,6 +88,25 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
