@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -16,9 +17,11 @@ public class Compression {
     @SneakyThrows
     public static void zipDirectory(Path source, Path target) {
         try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(target))) {
-            Files.walk(source)
-                    .filter(Predicate.not(Files::isDirectory))
-                    .forEach(path -> addZipEntry(zos, source, path));
+            try (Stream<Path> files = Files.walk(source)) {
+                files
+                        .filter(Predicate.not(Files::isDirectory))
+                        .forEach(path -> addZipEntry(zos, source, path));
+            }
         }
     }
 
