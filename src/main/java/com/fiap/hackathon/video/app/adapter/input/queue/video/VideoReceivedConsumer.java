@@ -12,7 +12,7 @@ public class VideoReceivedConsumer {
 
     private final VideoProcessUseCase videoProcessUseCase;
 
-    @RabbitListener(queues = "${application.queue.videoReceived.name}")
+    @RabbitListener(queues = "${application.queue.videoReceived.name}", concurrency = "${application.process.consumers}")
     public void consume(VideoReceivedEvent event) {
         videoProcessUseCase.execute(event.getId());
     }
