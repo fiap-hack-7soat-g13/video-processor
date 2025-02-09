@@ -25,7 +25,7 @@ public class FileSystemFileStorage implements FileStorage {
     }
 
     @PostConstruct
-    public void post() throws IOException {
+    public void postConstruct() throws IOException {
         Files.createDirectories(videoLocation.getDirectory());
         Files.createDirectories(thumbnailLocation.getDirectory());
     }

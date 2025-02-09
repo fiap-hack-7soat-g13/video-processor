@@ -17,6 +17,7 @@ application:
     videoStatusChanged:
       name: video_status_changed
   process:
+    consumers: 1-2
     directory: ${user.home}/video_storage/process
   storage:
     amazonS3:
