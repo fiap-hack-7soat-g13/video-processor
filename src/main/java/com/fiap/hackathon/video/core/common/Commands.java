@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Commands {
@@ -16,10 +17,10 @@ public class Commands {
 
         command.add("ffmpeg");
         command.add("-i");
-        command.add(input.getAbsolutePath());
+        command.add(Objects.nonNull(input) ? input.getAbsolutePath() : null);
         command.add("-vf");
         command.add("fps=1");
-        command.add(output.getAbsolutePath());
+        command.add(Objects.nonNull(output) ? output.getAbsolutePath() : null);
 
         return new Command(command);
     }
