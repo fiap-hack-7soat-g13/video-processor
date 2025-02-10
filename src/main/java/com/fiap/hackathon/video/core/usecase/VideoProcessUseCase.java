@@ -1,10 +1,9 @@
 package com.fiap.hackathon.video.core.usecase;
 
-import com.fiap.hackathon.video.app.adapter.output.queue.VideoStatusChangedDispatcher;
-import com.fiap.hackathon.video.app.adapter.output.storage.FileStorage;
 import com.fiap.hackathon.video.core.common.Commands;
 import com.fiap.hackathon.video.core.common.Compression;
 import com.fiap.hackathon.video.core.domain.VideoStatus;
+import com.fiap.hackathon.video.core.gateway.VideoGateway;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
@@ -19,13 +18,11 @@ import java.nio.file.Path;
 @Service
 public class VideoProcessUseCase {
 
-    private final VideoStatusChangedDispatcher videoStatusChangedDispatcher;
-    private final FileStorage fileStorage;
+    private final VideoGateway videoGateway;
     private final Path processDirectory;
 
-    public VideoProcessUseCase(VideoStatusChangedDispatcher videoStatusChangedDispatcher, FileStorage fileStorage, @Value("${application.process.directory}") String processDirectory) {
-        this.videoStatusChangedDispatcher = videoStatusChangedDispatcher;
-        this.fileStorage = fileStorage;
+    public VideoProcessUseCase(VideoGateway videoGateway, @Value("${application.process.directory}") String processDirectory) {
+        this.videoGateway = videoGateway;
         this.processDirectory = Path.of(processDirectory);
     }
 
@@ -38,19 +35,19 @@ public class VideoProcessUseCase {
     public void execute(Long id) {
         File directory = null;
         try {
-            videoStatusChangedDispatcher.dispatch(id, VideoStatus.PROCESSING);
+            videoGateway.dispatch(id, VideoStatus.PROCESSING);
             directory = Files.createTempDirectory(processDirectory, String.format("%s_", id)).toFile();
             Path outputDirectory = Files.createDirectories(directory.toPath().resolve("thumbnail"));
             Path original = directory.toPath().resolve(id.toString());
             Path thumbnail = directory.toPath().resolve("thumbnail.zip");
             String storageName = id.toString();
-            fileStorage.download(fileStorage.getVideoLocation(), storageName, original);
+            videoGateway.downloadFile(storageName, thumbnail);
             Commands.generateThumbnails(original.toFile(), outputDirectory.resolve("%d.jpg").toFile()).execute();
             Compression.zipDirectory(outputDirectory, thumbnail);
-            fileStorage.create(fileStorage.getThumbnailLocation(), storageName, thumbnail);
-            videoStatusChangedDispatcher.dispatch(id, VideoStatus.SUCCEEDED);
+            videoGateway.createFile(storageName, thumbnail);
+            videoGateway.dispatch(id, VideoStatus.SUCCEEDED);
         } catch (Exception e) {
-            videoStatusChangedDispatcher.dispatch(id, VideoStatus.FAILED);
+            videoGateway.dispatch(id, VideoStatus.FAILED);
             throw e;
         } finally {
             FileUtils.deleteQuietly(directory);
